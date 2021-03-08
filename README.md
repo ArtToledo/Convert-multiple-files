@@ -14,22 +14,70 @@ docx | pdf
 odt | doc
 odt | docx
 odt | pdf
+pdf | jpg or png
+docx | html
+all | base64
 
 ### Install
 
 `npm i convert-multiple-files`
 
-### Usage
+### Convert Word files
 
 ```javascript
-import { convert } from 'convert-multiple-files';
+import { convertWordFiles } from 'convert-multiple-files';
 import * as path from 'path';
 
-async teste() {
-  // Return promise => convert(path of the file to be converted, convertTo, outputDir)
-  const pathOutput = await convert(path.resolve(__dirname, 'teste.doc'), 'pdf', path.resolve(__dirname));
+async test() {
+  // Return promise => convertWordFiles(path of the file to be converted, convertTo, outputDir)
+  const pathOutput = await convertWordFiles(path.resolve(__dirname, 'teste.doc'), 'pdf', path.resolve(__dirname));
   console.log(pathOutput);
 }
 
-teste();
+test();
+```
+
+### Convert PDF to image
+
+```javascript
+import { convertPDFtoImage } from 'convert-multiple-files';
+import * as path from 'path';
+
+async test() {
+  // Return promise => convertPDFtoImage(path of the file to be converted, convertTo, outputDir, outputPrefix, page) * if the number of the page to be converted is not informed, all pages will be converted *
+  const infoPDF = await convertPDFtoImage(path.resolve(__dirname, 'file1.pdf'), 'png', path.resolve(__dirname), 'file-151412', 3);
+  console.log(infoPDF);
+}
+
+test();
+```
+
+### Convert DOCX to HTML
+
+```javascript
+import { convertWordFileToHTML } from 'convert-multiple-files';
+import * as path from 'path';
+
+async test() {
+  // Return promise => convertWordFileToHTML(path of the file to be converted, outputDir, outputPrefix)
+  const infoOutput = await convertWordFileToHTML(path.resolve(__dirname, 'file2.docx'), path.resolve(__dirname), 'filehtml-151412');
+  console.log(infoOutput);
+}
+
+test();
+```
+
+### Convert all files to Base64
+
+```javascript
+import { convertToBase64 } from 'convert-multiple-files';
+import * as path from 'path';
+
+async test() {
+  // Return promise => convertToBase64(path of the file to be converted)
+  const base64 = await convertToBase64(path.resolve(__dirname, 'file2.docx'));
+  console.log(base64);
+}
+
+test();
 ```
