@@ -1,16 +1,17 @@
 {
   "name": "convert-multiple-files",
-  "version": "1.0.2",
+  "version": "1.1.1",
   "description": "Convert files to other types",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "dist/**/*"
+    "lib/**/*"
   ],
   "scripts": {
     "test": "jest --config jestconfig.json",
     "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/index.ts",
     "build": "tsc",
+    "postinstall": "node lib/utils/download-libreoffice.js",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",

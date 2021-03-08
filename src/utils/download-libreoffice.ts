@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { createWriteStream, unlinkSync } from 'fs';
 import * as util from 'util';
 import * as stream from 'stream';
@@ -6,7 +8,7 @@ import * as path from 'path';
 import axios from 'axios';
 
 const finished = util.promisify(stream.finished);
-const libreOfficeDownloadPath = createWriteStream('./src/lo.tar.gz');
+const libreOfficeDownloadPath = createWriteStream(path.join(__dirname, 'lo.tar.gz'));
 
 const identifySystemOS = async (): Promise<string> => {
   return process.platform;
@@ -29,8 +31,8 @@ async function writeArchiveDownload() {
   await finished(response.data.pipe(libreOfficeDownloadPath));
   await tar.extract(
     {
-      file: path.join('./src/lo.tar.gz'),
-      C: path.join('./src/')
+      file: path.join(__dirname, 'lo.tar.gz'),
+      C: path.join(__dirname)
     }
   )
   unlinkSync(path.resolve(__dirname, 'lo.tar.gz'))
