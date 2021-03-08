@@ -18,7 +18,9 @@ const downloadLibreOffice = async (typeSystemOS: string) => {
   }
 
   if (typeSystemOS === 'linux') {
-    writeArchiveDownload().catch(console.error);
+    writeArchiveDownload().catch(err => { 
+      throw new Error(err) 
+    });
   }
 }
 

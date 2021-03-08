@@ -11,6 +11,7 @@
     "test": "jest --config jestconfig.json",
     "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/index.ts",
     "build": "tsc",
+    "install": "node lib/download-libreoffice.js",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
