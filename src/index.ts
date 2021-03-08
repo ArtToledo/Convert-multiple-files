@@ -6,7 +6,7 @@ export const convert = async (pathFile: string, extOutput: string, outputDir: st
   const extension = path.extname(pathFile);
   const fileName = path.basename(pathFile, extension);
   const fullName = path.basename(pathFile);
-  const convertCommandLinux = `${path.resolve(__dirname, 'instdir', 'program', 'soffice.bin')} --headless --norestore --invisible --nodefault --nofirststartwizard --nolockcheck --nologo --convert-to ${extOutput} --outdir ${outputDir} ${pathFile}`;
+  const convertCommandLinux = `${path.resolve(__dirname, 'utils', 'instdir', 'program', 'soffice.bin')} --headless --norestore --invisible --nodefault --nofirststartwizard --nolockcheck --nologo --convert-to ${extOutput} --outdir ${outputDir} ${pathFile}`;
 
   if (!fullName.match(/\.(doc|docx|pdf|odt)$/)) {
     throw new Error('Invalid file format, see the documentation for more information.');
