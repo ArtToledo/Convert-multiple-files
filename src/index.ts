@@ -7,6 +7,7 @@ export const convert = async (pathFile: string, extOutput: string, outputDir: st
   const fileName = path.basename(pathFile, extension);
   const fullName = path.basename(pathFile);
   const convertCommandLinux = `${path.resolve(__dirname, 'utils', 'instdir', 'program', 'soffice.bin')} --headless --norestore --invisible --nodefault --nofirststartwizard --nolockcheck --nologo --convert-to ${extOutput} --outdir ${outputDir} ${pathFile}`;
+  const convertCommandWindows = `${path.resolve(__dirname, 'utils', 'LibreOfficePortable', 'App', 'libreoffice', 'program', 'soffice.bin')} --headless --norestore --invisible --nodefault --nofirststartwizard --nolockcheck --nologo --convert-to ${extOutput} --outdir ${outputDir} ${pathFile}`;
 
   if (!fullName.match(/\.(doc|docx|pdf|odt)$/)) {
     throw new Error('Invalid file format, see the documentation for more information.');
@@ -16,7 +17,7 @@ export const convert = async (pathFile: string, extOutput: string, outputDir: st
 
   try {
     if (system === 'linux') { child_process.execSync(convertCommandLinux).toString('utf8') }
-    if (system === 'win32') { /*  */ }
+    if (system === 'win32') { child_process.execSync(convertCommandWindows).toString('utf8') }
   } catch (e) {
     throw new Error('Error converting the file');
   }
