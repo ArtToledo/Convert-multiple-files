@@ -1,6 +1,6 @@
 {
   "name": "convert-multiple-files",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "description": "Convert files to other types",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,10 +13,8 @@
     "build": "tsc",
     "postinstall": "node lib/utils/download-libreoffice.js",
     "format": "prettier --write \"src/**/*.ts\"",
-    "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint",
+    "prepublishOnly": "npm test",
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
@@ -53,7 +51,7 @@
   "dependencies": {
     "assert": "^2.0.0",
     "axios": "^0.21.1",
-    "canvas": "^2.7.0",
+    "canvas": "^2.6.1",
     "mammoth-style": "0.0.3",
     "pdfjs-dist": "^2.6.347",
     "tar": "^6.1.0"

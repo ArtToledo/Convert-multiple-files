@@ -31,85 +31,89 @@ export const convertWordFiles = async (pathFile: string, extOutput: string, outp
 }
 
 export const convertPDFtoImage = async (pathFile: string, outputDir: string, nameOutput: string, numberPage: number) => {
-  function NodeCanvasFactory() { }
-  NodeCanvasFactory.prototype = {
-    create: function NodeCanvasFactory_create(width, height) {
+  return new Promise((resolve, reject) => {
+    function NodeCanvasFactory() { }
+    NodeCanvasFactory.prototype = {
+      create: function NodeCanvasFactory_create(width, height) {
+        assert(width > 0 && height > 0, "Invalid canvas size");
+        const canvas = Canvas.createCanvas(width, height);
+        const context = canvas.getContext("2d");
+        return {
+          canvas,
+          context,
+        };
+      },
+
+    reset: function NodeCanvasFactory_reset(canvasAndContext, width, height) {
+      assert(canvasAndContext.canvas, "Canvas is not specified");
       assert(width > 0 && height > 0, "Invalid canvas size");
-      const canvas = Canvas.createCanvas(width, height);
-      const context = canvas.getContext("2d");
-      return {
-        canvas,
-        context,
-      };
+      canvasAndContext.canvas.width = width;
+      canvasAndContext.canvas.height = height;
     },
 
-  reset: function NodeCanvasFactory_reset(canvasAndContext, width, height) {
-    assert(canvasAndContext.canvas, "Canvas is not specified");
-    assert(width > 0 && height > 0, "Invalid canvas size");
-    canvasAndContext.canvas.width = width;
-    canvasAndContext.canvas.height = height;
-  },
+    destroy: function NodeCanvasFactory_destroy(canvasAndContext) {
+      assert(canvasAndContext.canvas, "Canvas is not specified");
 
-  destroy: function NodeCanvasFactory_destroy(canvasAndContext) {
-    assert(canvasAndContext.canvas, "Canvas is not specified");
+      // Zeroing the width and height cause Firefox to release graphics
+      // resources immediately, which can greatly reduce memory consumption.
+      canvasAndContext.canvas.width = 0;
+      canvasAndContext.canvas.height = 0;
+      canvasAndContext.canvas = null;
+      canvasAndContext.context = null;
+    },
+    };
 
-    // Zeroing the width and height cause Firefox to release graphics
-    // resources immediately, which can greatly reduce memory consumption.
-    canvasAndContext.canvas.width = 0;
-    canvasAndContext.canvas.height = 0;
-    canvasAndContext.canvas = null;
-    canvasAndContext.context = null;
-  },
-  };
+    // Some PDFs need external cmaps.
+    const CMAP_URL = "../node_modules/pdfjs-dist/cmaps/";
+    const CMAP_PACKED = true;
 
-  // Some PDFs need external cmaps.
-  const CMAP_URL = "../node_modules/pdfjs-dist/cmaps/";
-  const CMAP_PACKED = true;
+    // Loading file from file system into typed array.
+    const pdfPath = pathFile;
+    const data = new Uint8Array(fs.readFileSync(pdfPath));
 
-  // Loading file from file system into typed array.
-  const pdfPath = pathFile;
-  const data = new Uint8Array(fs.readFileSync(pdfPath));
+    // Load the PDF file.
+    const loadingTask = pdfjsLib.getDocument({
+      data,
+      cMapUrl: CMAP_URL,
+      cMapPacked: CMAP_PACKED,
+    });
+    loadingTask.promise
+      .then(function (pdfDocument) {
 
-  // Load the PDF file.
-  const loadingTask = pdfjsLib.getDocument({
-    data,
-    cMapUrl: CMAP_URL,
-    cMapPacked: CMAP_PACKED,
-  });
-  loadingTask.promise
-    .then(function (pdfDocument) {
+      pdfDocument.getPage(numberPage).then(function (page) {
+        // Render the page on a Node canvas with 100% scale.
+        const viewport = page.getViewport({ scale: 1.0 });
+        const canvasFactory = new NodeCanvasFactory();
+        const canvasAndContext = canvasFactory.create(
+          viewport.width,
+          viewport.height
+        );
+        const renderContext = {
+          canvasContext: canvasAndContext.context,
+          viewport,
+          canvasFactory,
+        };
 
-    const numberOfPages = pdfDocument._numPages;
-
-    pdfDocument.getPage(numberPage).then(function (page) {
-      // Render the page on a Node canvas with 100% scale.
-      const viewport = page.getViewport({ scale: 1.0 });
-      const canvasFactory = new NodeCanvasFactory();
-      const canvasAndContext = canvasFactory.create(
-        viewport.width,
-        viewport.height
-      );
-      const renderContext = {
-        canvasContext: canvasAndContext.context,
-        viewport,
-        canvasFactory,
-      };
-
-      const renderTask = page.render(renderContext);
-      renderTask.promise.then(function () {
-        // Convert the canvas to an image buffer.
-        const image = canvasAndContext.canvas.toBuffer();
-        fs.writeFile(path.resolve(outputDir, `${nameOutput}-${numberPage}.png`), image, function (error) {
-          if (error) {
-            throw new Error(error.message)
-          }
+        const renderTask = page.render(renderContext);
+        renderTask.promise.then(function () {
+          // Convert the canvas to an image buffer.
+          const image = canvasAndContext.canvas.toBuffer();
+          fs.writeFile(path.resolve(outputDir, `${nameOutput}-${numberPage}.png`), image, function (error) {
+            if (error) {
+              throw new Error(error.message)
+            } else {
+              setTimeout(function () {
+                resolve(path.resolve(outputDir, `${nameOutput}-${numberPage}.png`));
+              }, 200);
+            }
+          });
         });
       });
+    })
+    .catch(function (reason) {
+      throw new Error(reason)
     });
   })
-  .catch(function (reason) {
-    throw new Error(reason)
-  });
 }
 
 export const numberOfPagesFromPDF = async (pathFile: string) => {
