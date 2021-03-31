@@ -14,7 +14,6 @@ docx | pdf
 odt | doc
 odt | docx
 odt | pdf
-pdf | jpg or png
 docx | html
 all | base64
 
@@ -32,21 +31,6 @@ async test() {
   // Return promise => convertWordFiles(path of the file to be converted, convertTo, outputDir)
   const pathOutput = await convertWordFiles(path.resolve(__dirname, 'teste.doc'), 'pdf', path.resolve(__dirname));
   console.log(pathOutput);
-}
-
-test();
-```
-
-### Convert PDF to image
-
-```javascript
-import { convertPDFtoImage } from 'convert-multiple-files';
-import * as path from 'path';
-
-async test() {
-  // Return promise => convertPDFtoImage(path of the file to be converted, convertTo, outputDir, outputPrefix, page) * if the number of the page to be converted is not informed, all pages will be converted *
-  const infoPDF = await convertPDFtoImage(path.resolve(__dirname, 'file1.pdf'), 'png', path.resolve(__dirname), 'file-151412', 3);
-  console.log(infoPDF);
 }
 
 test();

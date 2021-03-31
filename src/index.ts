@@ -30,8 +30,21 @@ export const convertWordFiles = async (pathFile: string, extOutput: string, outp
 export const convertWordFileToHTML = async (pathFile: string, outputDir: string, outputPrefix: string) => {
   try {
     const { value: contentHTML } = await mammoth.convertToHtml({ path: pathFile });
-    fs.writeFileSync(path.resolve(outputDir, `${outputPrefix}.html`), contentHTML);
+    if (!contentHTML) return;
 
+    if (contentHTML.search('<p>') === 0) {
+      const titleTags = contentHTML.substring(0, contentHTML.indexOf('</p>') + 4);
+      let alignTitle = titleTags.replace(/<p>/g, '<center>');
+      alignTitle = alignTitle.replace(/<\/p>/g, '</center>');
+      
+      const newContentHTML = contentHTML.replace(titleTags, alignTitle)
+      fs.writeFileSync(path.resolve(outputDir, `${outputPrefix}.html`), newContentHTML);
+      return {
+        output: `${path.resolve(outputDir, `${outputPrefix}.html`)}`
+      };
+    }
+    
+    fs.writeFileSync(path.resolve(outputDir, `${outputPrefix}.html`), contentHTML);
     return {
       output: `${path.resolve(outputDir, `${outputPrefix}.html`)}`
     }
