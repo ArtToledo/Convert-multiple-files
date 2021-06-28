@@ -11,7 +11,7 @@ export const convertWordFiles = async (pathFile: string, extOutput: string, outp
   const convertCommandLinux = `${path.resolve(__dirname, 'utils', 'instdir', 'program', 'soffice.bin')} --headless --norestore --invisible --nodefault --nofirststartwizard --nolockcheck --nologo --convert-to ${extOutput} --outdir ${outputDir} '${pathFile}'`;
   const convertCommandWindows = `${path.resolve(__dirname, 'utils', 'LibreOfficePortable', 'App', 'libreoffice', 'program', 'soffice.bin')} --headless --norestore --invisible --nodefault --nofirststartwizard --nolockcheck --nologo --convert-to ${extOutput} --outdir ${outputDir} "${pathFile}"`;
 
-  if (!fullName.match(/\.(doc|docx|pdf|odt)$/)) {
+  if (!fullName.match(/\.(doc|docx|pdf|odt)$/i)) {
     throw new Error('Invalid file format, see the documentation for more information.');
   } else if (!extOutput.match(/(doc|docx|pdf|odt)$/)) {
     throw new Error('Format to be converted not accepted');
