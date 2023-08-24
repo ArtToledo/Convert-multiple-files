@@ -18,8 +18,8 @@ export const convertWordFiles = async (pathFile: string, extOutput: string, outp
   }
 
   try {
-    if (system === 'linux') { child_process.execSync(convertCommandLinux).toString('utf8') }
     if (system === 'win32') { child_process.execSync(convertCommandWindows).toString('utf8') }
+    else { child_process.execSync(convertCommandLinux).toString('utf8') }
   } catch (e) {
     throw new Error('Error converting the file');
   }
