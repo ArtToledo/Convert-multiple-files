@@ -2,6 +2,9 @@
   "transform": {
     "^.+\\.(t|j)sx?$": "ts-jest"
   },
+  "testEnvironment": "node",
+  "roots": ["<rootDir>/src"],
   "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
+  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+  "collectCoverageFrom": ["src/**/*.ts", "!src/**/__tests__/**", "!src/utils/download-libreoffice.ts"]
 }
